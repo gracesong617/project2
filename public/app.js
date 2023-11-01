@@ -1,6 +1,11 @@
 let socket = io();
 let myFood = [];
 let foodSize = 30;
+let foodImage;
+
+function preload() {
+  foodImage = loadImage("images/cake.png");
+}
 
 window.addEventListener("load", () => {
   let startButton = document.getElementById("startButton");
@@ -74,12 +79,14 @@ function draw() {
 
 function drawAllFood() {
   noStroke();
+  
   for (let i = 0; i < myFood.length; i++) {
     if (myFood[i].touched == false) {
-      fill(0);
+      noFill();
     } else {
       fill(255);
     }
+    image(foodImage, myFood[i].x, myFood[i].y, foodSize, foodSize);
     rect(myFood[i].x, myFood[i].y, foodSize, foodSize);
   }
 }
