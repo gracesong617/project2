@@ -1,3 +1,9 @@
 body {
-  background: #a5ddbf
+  background: #a5ddbf;
+  cursor: url(./images/girl.png),auto;
 }
+
+/* canvas {
+  cursor: url(./images/girl.png),auto;
+}
+ */
