@@ -19,12 +19,25 @@ io = new io.Server(server);
 // Listen for a new connection
 io.sockets.on("connect", (socket) => {
   console.log("New connection : ", socket.id);
+  
+   socket.on("start", () => {
+    initializeFood();
+    let data = {
+      "food": food
+    }
+    io.sockets.emit("setFood", data);
+  })
 
   socket.on("mouseData", (data) => {
     // console.log(data);
     io.sockets.emit("mouseDataServer", data);
   })
 
+  //send the food Info that you have rx from a client to all clients
+  socket.on("foodFromClient",(data) => {
+    io.sockets.emit("foodFromServer", data);
+  })
+  
   // in case of disconnection
   socket.on("disconnect", () => {
     console.log("Disconnection : ", socket.id);
