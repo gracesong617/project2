@@ -4,6 +4,9 @@ let express = require("express");
 let app = express();
 app.use("/", express.static("public"));
 
+let food = [];
+initializeFood();
+
 //creating the http server - this is a new step!
 let http = require("http");
 let server = http.createServer(app);
