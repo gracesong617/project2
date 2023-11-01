@@ -5,6 +5,7 @@ let app = express();
 app.use("/", express.static("public"));
 
 let food = [];
+let numFood = 10;
 initializeFood();
 
 //creating the http server - this is a new step!
@@ -35,3 +36,12 @@ io.sockets.on("connect", (socket) => {
 server.listen(PORT, () => {
   console.log("server on port ", PORT);
 })
+
+function initializeFood() {
+  food  = [];// clear the array before adding the new sqObjects;
+  for(let i =0;i<numFood;i++) {
+    let xPos = Math.floor(Math.random()*700); //get a random value bw 0-400 (assuming width of canvas is 400)
+    let yPos = Math.floor(Math.random()*700);
+    food.push({id:i,x:xPos, y:yPos, touched:false}); //set touched to false initially, once a mouse has touched, we will change this. 
+  }
+}
