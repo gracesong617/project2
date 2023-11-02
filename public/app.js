@@ -4,27 +4,24 @@ let foodSize = 30;
 let foodImage;
 
 let maxDropHeight = 100;
-let dropSpeed = 3;
-
-// const badArray = [
-//   "https://cdn.glitch.global/217914d9-642c-4cbb-b47b-36ae284f5c68/bad1.png?v=1698930683428",
-//   "https://cdn.glitch.global/217914d9-642c-4cbb-b47b-36ae284f5c68/bad2.png?v=1698930687609",
-//   "https://cdn.glitch.global/217914d9-642c-4cbb-b47b-36ae284f5c68/bad3.png?v=1698930688314",
-//   "https://cdn.glitch.global/217914d9-642c-4cbb-b47b-36ae284f5c68/bad4.png?v=1698930693115",
-// ];
+let dropSpeed = 5;
 
 const badArray = [
-  'images/cakes.png',
-  'images/girl.png',
-  'images/shoe.png',
+  "images/bad1.png",
+  "images/bad2.png",
+  "images/bad3.png",
+  "images/bad4.png",
+];
+
+const goodArray = [
+  
 ];
 
 function preload() {
   foodImage = loadImage("images/cake.png");
-    for (let i = 0; i < badArray.length; i++) {
-    loadImage(badArray[i]);
+  for (let i = 0; i < badArray.length; i++) {
+    badArray[i] = loadImage(badArray[i]);
   }
-
 }
 
 window.addEventListener("load", () => {
@@ -57,9 +54,10 @@ function setup() {
     //set the local objects to the update info from the client;
     myFood = data.food;
   });
-    // Create and initialize food objects with random images from "badArray"
-  for (let i = 0; i < 10; i++) { 
-    const randomImageURL = badArray[Math.floor(Math.random() * badArray.length)];
+  // Create and initialize food objects with random images from "badArray"
+  for (let i = 0; i < 10; i++) {
+    const randomImageURL =
+      badArray[Math.floor(Math.random() * badArray.length)];
     myFood.push({
       x: random(width - foodSize),
       y: random(maxDropHeight),
@@ -120,8 +118,10 @@ function draw() {
 //     rect(myFood[i].x, myFood[i].y, foodSize, foodSize);
 //   }
 // }
+
 function drawAllFood() {
   noStroke();
+  clear();
 
   for (let i = 0; i < myFood.length; i++) {
     if (!myFood[i].touched) {
@@ -134,8 +134,9 @@ function drawAllFood() {
         myFood[i].touched = false;
       }
 
-      const img = loadImage(myFood[i].image); 
+      const img = myFood[i].image
       image(img, myFood[i].x, myFood[i].y, foodSize, foodSize);
     }
   }
 }
+
