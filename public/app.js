@@ -4,17 +4,14 @@ let foodSize = 30;
 let foodImage;
 
 let maxDropHeight = 100;
-let dropSpeed = 3; 
+let dropSpeed = 3;
 
 const badArray = [
-  'https://cdn.glitch.global/217914d9-642c-4cbb-b47b-36ae284f5c68/bad1.png?v=1698930683428',
-  'https://cdn.glitch.global/217914d9-642c-4cbb-b47b-36ae284f5c68/bad2.png?v=1698930687609',
-  'https://cdn.glitch.global/217914d9-642c-4cbb-b47b-36ae284f5c68/bad3.png?v=1698930688314',
-  'https://cdn.glitch.global/217914d9-642c-4cbb-b47b-36ae284f5c68/bad4.png?v=1698930693115',
-  ];
-
-
-
+  "https://cdn.glitch.global/217914d9-642c-4cbb-b47b-36ae284f5c68/bad1.png?v=1698930683428",
+  "https://cdn.glitch.global/217914d9-642c-4cbb-b47b-36ae284f5c68/bad2.png?v=1698930687609",
+  "https://cdn.glitch.global/217914d9-642c-4cbb-b47b-36ae284f5c68/bad3.png?v=1698930688314",
+  "https://cdn.glitch.global/217914d9-642c-4cbb-b47b-36ae284f5c68/bad4.png?v=1698930693115",
+];
 
 function preload() {
   foodImage = loadImage("images/cake.png");
@@ -75,8 +72,6 @@ function mouseMoved() {
       socket.emit("foodFromClient", data);
     }
   }
-  
-  
 }
 
 // function drawPos(data) {
@@ -88,7 +83,6 @@ function mouseMoved() {
 function draw() {
   // keep drawing the local "myFood"
   drawAllFood();
-
 }
 
 //function to draw the food
