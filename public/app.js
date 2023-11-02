@@ -3,6 +3,18 @@ let myFood = [];
 let foodSize = 30;
 let foodImage;
 
+let maxDropHeight = 100;
+let dropSpeed = 3; 
+
+const badArray = [
+  'https://cdn.glitch.global/217914d9-642c-4cbb-b47b-36ae284f5c68/bad1.png?v=1698930683428',
+  'https://cdn.glitch.global/217914d9-642c-4cbb-b47b-36ae284f5c68/bad2.png?v=1698930687609',
+  'https://cdn.glitch.global/217914d9-642c-4cbb-b47b-36ae284f5c68/bad3.png?v=1698930688314',
+  'https://cdn.glitch.global/217914d9-642c-4cbb-b47b-36ae284f5c68/bad4.png?v=1698930693115',
+  ];
+
+const randomImage = document.getElementById('randomImage');
+
 function preload() {
   foodImage = loadImage("images/cake.png");
 }
@@ -62,6 +74,8 @@ function mouseMoved() {
       socket.emit("foodFromClient", data);
     }
   }
+  
+  
 }
 
 // function drawPos(data) {
@@ -79,7 +93,7 @@ function draw() {
 
 function drawAllFood() {
   noStroke();
-  
+
   for (let i = 0; i < myFood.length; i++) {
     if (myFood[i].touched == false) {
       noFill();
