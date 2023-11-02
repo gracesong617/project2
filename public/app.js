@@ -3,8 +3,13 @@ let myFood = [];
 let foodSize = 30;
 let foodImage;
 
+let characterImage;
+let characterX;
+let characterY;
+
 let maxDropHeight = 100;
-let dropSpeed = 5;
+let badDropSpeed = 5;
+let goodDropSpeed = 3;
 
 const badArray = [
   "images/bad1.png",
@@ -14,13 +19,24 @@ const badArray = [
 ];
 
 const goodArray = [
-  
+  "images/good1.png",
+  "images/good2.png",
+  "images/good3.png",
+  "images/good4.png",
+  "images/good5.png",
+  "images/good6.png",
+  "images/good7.png",
+  "images/good8.png",
 ];
 
 function preload() {
   foodImage = loadImage("images/cake.png");
+  characterImage = loadImage("images/girl.png");
   for (let i = 0; i < badArray.length; i++) {
     badArray[i] = loadImage(badArray[i]);
+  }
+  for (let i = 0; i < goodArray.length; i++) {
+    goodArray[i] = loadImage(goodArray[i]);
   }
 }
 
@@ -40,6 +56,9 @@ function setup() {
   createCanvas(700, 700);
   background("#ffffff");
 
+  characterX = width / 2; // center
+  characterY = height - 100; // bottom
+
   socket.on("mouseDataServer", (data) => {
     drawPos(data);
   });
@@ -55,14 +74,17 @@ function setup() {
     myFood = data.food;
   });
   // Create and initialize food objects with random images from "badArray"
-  for (let i = 0; i < 10; i++) {
+  for (let i = 0; i < 15; i++) {
+    const isGood = random() < 0.6; // 50% chance of being good or bad
+    const foodArray = isGood ? goodArray : badArray;
     const randomImageURL =
-      badArray[Math.floor(Math.random() * badArray.length)];
+      foodArray[Math.floor(Math.random() * foodArray.length)];
     myFood.push({
       x: random(width - foodSize),
       y: random(maxDropHeight),
       image: randomImageURL,
       touched: false,
+      isGood: isGood, // Add isGood property
     });
   }
 }
@@ -99,8 +121,26 @@ function mouseMoved() {
 // }
 
 function draw() {
+  clear();
+  characterX = mouseX - 25;
+ characterY = constrain(mouseY, height - 100, height - 100);
+
+  if (frameCount % 60 == 0) {
+    const isGood = random() < 0.6;
+    const foodArray = isGood ? goodArray : badArray;
+    const randomImageURL = foodArray[Math.floor(random(foodArray.length))];
+    myFood.push({
+      x: random(width - foodSize),
+      y: -foodSize,
+      image: randomImageURL,
+      touched: false,
+      isGood: isGood,
+    });
+  }
+
   // keep drawing the local "myFood"
   drawAllFood();
+  image(characterImage, characterX, characterY, 100, 100);
 }
 
 //function to draw the food
@@ -125,18 +165,19 @@ function drawAllFood() {
 
   for (let i = 0; i < myFood.length; i++) {
     if (!myFood[i].touched) {
-      myFood[i].y += dropSpeed;
+      myFood[i].y += myFood[i].isGood ? goodDropSpeed : badDropSpeed;
 
       if (myFood[i].y > height) {
         myFood[i].y = -foodSize;
         myFood[i].x = random(width - foodSize);
-        myFood[i].image = badArray[Math.floor(Math.random() * badArray.length)];
+        const foodArray = myFood[i].isGood ? goodArray : badArray;
+        myFood[i].image =
+          foodArray[Math.floor(Math.random() * foodArray.length)];
         myFood[i].touched = false;
       }
 
-      const img = myFood[i].image
+      const img = myFood[i].image;
       image(img, myFood[i].x, myFood[i].y, foodSize, foodSize);
     }
   }
 }
-
