@@ -13,7 +13,8 @@ const badArray = [
   'https://cdn.glitch.global/217914d9-642c-4cbb-b47b-36ae284f5c68/bad4.png?v=1698930693115',
   ];
 
-const randomImage = document.getElementById('randomImage');
+
+
 
 function preload() {
   foodImage = loadImage("images/cake.png");
@@ -87,6 +88,7 @@ function mouseMoved() {
 function draw() {
   // keep drawing the local "myFood"
   drawAllFood();
+
 }
 
 //function to draw the food
