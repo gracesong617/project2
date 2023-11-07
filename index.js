@@ -1,60 +1,95 @@
 const PORT = process.env.PORT || 11000;
-//creating the express app
-let express = require("express");
-let app = express();
+const express = require("express");
+const app = express();
 app.use("/", express.static("public"));
 
-let food = [];
-let numFood = 10;
+const food = [];
+const numFood = 10;
 initializeFood();
 
-//creating the http server - this is a new step!
-let http = require("http");
-let server = http.createServer(app);
+const http = require("http");
+const server = http.createServer(app);
 
-//initialize socket.io
-let io = require("socket.io");
-io = new io.Server(server);
+const io = require("socket.io");
+const ioServer = new io.Server(server);
 
-// Listen for a new connection
-io.sockets.on("connect", (socket) => {
+// Store player data and track assigned characters
+const players = {};
+const assignedCharacters = {};
+
+// Define available player character images
+const playerCharacters = [
+  "p1.png",
+  "p2.png",
+  "p3.png",
+  "p4.png",
+];
+
+ioServer.on("connect", (socket) => {
   console.log("New connection : ", socket.id);
-  
-   socket.on("start", () => {
+
+  // Player starts the game
+  socket.on("start", () => {
     initializeFood();
-    let data = {
-      "food": food
+
+    const playerId = socket.id;
+
+    // Check if the player already has an assigned character
+    if (assignedCharacters[playerId]) {
+      // Handle the case when the player already has a character
+      socket.emit("characterAlreadyAssigned");
+      return;
     }
-    io.sockets.emit("setFood", data);
-  })
 
-  socket.on("mouseData", (data) => {
-    // console.log(data);
-    io.sockets.emit("mouseDataServer", data);
-  })
+    // Assign a unique player character
+    const availableCharacters = playerCharacters.filter((character) => !Object.values(assignedCharacters).includes(character));
 
-  //send the food Info that you have rx from a client to all clients
-  socket.on("foodFromClient",(data) => {
-    io.sockets.emit("foodFromServer", data);
-  })
-  
-  // in case of disconnection
+    if (availableCharacters.length === 0) {
+      // Handle the case when all characters are already in use
+      socket.emit("noCharactersAvailable");
+      return;
+    }
+
+    const randomCharacter = availableCharacters[Math.floor(Math.random() * availableCharacters.length)];
+    assignedCharacters[playerId] = randomCharacter;
+
+    players[playerId] = {
+      x: Math.floor(Math.random() * 700),
+      y: Math.floor(Math.random() * 700),
+      character: randomCharacter,
+    };
+
+    const data = {
+      food: food,
+      playerId: playerId,
+      character: randomCharacter,
+    };
+
+    // 发送分配的角色和食物数据给特定连接
+    socket.emit("setFood", data);
+  });
+
+  // Handle player disconnection
   socket.on("disconnect", () => {
+    if (players[socket.id]) {
+      const character = players[socket.id].character;
+      // Free up the character when a player disconnects
+      delete assignedCharacters[socket.id];
+      delete players[socket.id];
+    }
     console.log("Disconnection : ", socket.id);
-  })
+  });
+});
 
-})
-
-//run the app on port 5000
 server.listen(PORT, () => {
   console.log("server on port ", PORT);
-})
+});
 
 function initializeFood() {
-  food  = [];// clear the array before adding the new food;
-  for(let i =0;i<numFood;i++) {
-    let xPos = Math.floor(Math.random()*700); //get a random value bw 0-700 (canvas width is 700)
-    let yPos = Math.floor(Math.random()*700);
-    food.push({id:i,x:xPos, y:yPos, touched:false}); //set touched to false initially, once a mouse has touched, we will change this. 
+  food.length = 0;
+  for (let i = 0; i < numFood; i++) {
+    const xPos = Math.floor(Math.random() * 700);
+    const yPos = Math.floor(Math.random() * 700);
+    food.push({ id: i, x: xPos, y: yPos, touched: false });
   }
 }
