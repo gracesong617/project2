@@ -19,10 +19,10 @@ const assignedCharacters = {};
 
 // Define available player character images
 const playerCharacters = [
-  "p1.png",
-  "p2.png",
-  "p3.png",
-  "p4.png",
+  "P1 Momonga",
+  "P2 Chiikawa",
+  "P3 Hachiware",
+  "P4 Usagi",
 ];
 
 ioServer.on("connect", (socket) => {
@@ -67,6 +67,18 @@ ioServer.on("connect", (socket) => {
 
     // 发送分配的角色和食物数据给特定连接
     socket.emit("setFood", data);
+    console.log(`Player ${playerId} is assigned character: ${randomCharacter}`);
+
+    socket.on("characterSizeChanged", (newSize) => {
+      const playerId = socket.id;
+    
+      if (players[playerId]) {
+        players[playerId].size = newSize;
+    
+        // updated character size to every players
+        ioServer.emit("characterSizeUpdated", { playerId, size: newSize });
+      }
+    });
   });
 
   // Handle player disconnection
@@ -80,6 +92,7 @@ ioServer.on("connect", (socket) => {
     console.log("Disconnection : ", socket.id);
   });
 });
+
 
 server.listen(PORT, () => {
   console.log("server on port ", PORT);

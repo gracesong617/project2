@@ -1,6 +1,8 @@
 let socket = io();
 let assignedCharacter;
-let myCharacter; //set the character that assigned to current player
+let myCharacter; // 分配给当前玩家的角色
+let characterName;
+const playerSizes = {};
 
 socket.on("connect", () => {
   console.log("Connected");
@@ -11,14 +13,54 @@ socket.on("characterAssigned", (character) => {
   assignedCharacter = character;
   console.log("Assigned Character: ", assignedCharacter);
   myCharacter = assignedCharacter;
+  displayCharacterName(assignedCharacter);
+});
+
+socket.on("noCharactersAvailable", () => {
+  console.log("No characters available. Try again later.");
+});
+
+socket.on("characterSizeUpdated", (data) => {
+  const playerId = data.playerId;
+  const newSize = data.size;
+
+  // 更新所有玩家的角色大小
+  playerSizes[playerId] = newSize;
+  // 显示大小
+  displayAllPlayersCharacterSize(playerSizes);
 });
 
 socket.on("setFood", (data) => {
   assignedCharacter = data.character;
   console.log("Assigned Character: ", assignedCharacter);
   socket.emit("characterAssigned", assignedCharacter);
+  displayCharacterName(assignedCharacter);
+  displayCharacterSize(characterSize);
 });
 
+function displayCharacterName(character) {
+  characterName = character;
+  const characterNameElement = document.getElementById("characterName");
+  characterNameElement.innerText = `Your Character: ${characterName}`;
+}
+
+function changeCharacterSize(newSize) {
+  socket.emit("characterSizeChanged", newSize);
+}
+
+function displayAllPlayersCharacterSize(playerSizes) {
+  const playerSizeElement = document.getElementById("allPlayersCharacterSize");
+  playerSizeElement.innerHTML = "";
+
+  for (const playerId in playerSizes) {
+    const size = playerSizes[playerId];
+    const playerSizeDiv = document.createElement("div");
+    playerSizeDiv.innerText = `Player ${playerId}: Size: ${size}`;
+    playerSizeElement.appendChild(playerSizeDiv);
+  }
+}
+
+// 剩余部分的代码
 
 
 let myFood = [];
