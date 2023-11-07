@@ -2,20 +2,19 @@ let socket = io();
 let myFood = [];
 let foodSize = 30;
 let foodImage;
-let characterImage = [];
 let characterX;
 let characterY;
-let characterSize = 100; //original size
+let characterSize = 80; //original size
 let characterSizeIncrement = 5; 
 let maxDropHeight = 100;
 let badDropSpeed = 5;
 let goodDropSpeed = 3;
 
-const playerCharacters = [
-  { x: 100, y: height - 100, size: 100 },
-  { x: 200, y: height - 100, size: 100 },
-  { x: 300, y: height - 100, size: 100 },
-  { x: 400, y: height - 100, size: 100 },
+const characterImages = [ // 将characterImage更改为characterImages
+  "images/p1.png",
+  "images/p2.png",
+  "images/p3.png",
+  "images/p4.png",
 ];
 
 const badArray = [
@@ -37,10 +36,9 @@ const goodArray = [
 ];
 
 function preload() {
-  characterImageImages[0] = loadImage("images/p1.png");
-  characterImageImages[1] = loadImage("images/p2.png");
-  characterImageImages[2] = loadImage("images/p3.png");
-  characterImageImages[3] = loadImage("images/p4.png");
+  for (let i = 0; i < characterImages.length; i++) {
+    characterImages[i] = loadImage(characterImages[i]); // 修正为characterImages
+  }
   for (let i = 0; i < badArray.length; i++) {
     badArray[i] = loadImage(badArray[i]);
   }
@@ -87,7 +85,7 @@ function mouseMoved() {
   characterX = mouseX - characterSize / 2;
   characterY = constrain(mouseY, height - 100, height - 100);
 
-  // check touched and remove food
+  // 检查碰触并移除食物
   for (let i = myFood.length - 1; i >= 0; i--) {
     if (
       characterX < myFood[i].x + foodSize &&
@@ -96,17 +94,17 @@ function mouseMoved() {
       characterY + characterSize > myFood[i].y
     ) {
       if (myFood[i].isGood) {
-        characterSize += characterSizeIncrement; // good food - plus 10 px
+        characterSize += characterSizeIncrement; // 好食物 - 增加 10 像素
       } else {
-        //random -10px to - 30 px
+        // 随机减少 10 到 30 像素
         characterSize -= Math.floor(random(10, 31));
         characterSize = max(characterSize, 100);
       }
-      myFood.splice(i, 1); // remove food
+      myFood.splice(i, 1); // 移除食物
     }
   }
 
-//send updated food to server
+  // 发送更新的食物到服务器
   let data = {
     food: myFood,
   };
@@ -115,17 +113,8 @@ function mouseMoved() {
 
 function draw() {
   clear();
-  
-  for (let i = 0; i < playerCharacters.length; i++) {
-    let characterWidth = playerCharacters[i].size;
-    let characterHeight = playerCharacters[i].size;
-    let characterBottom = height - characterHeight;
 
-    // 渲染每个人物
-    image(playerCharacters[i].image, playerCharacters[i].x, characterBottom, characterWidth, characterHeight);
-  }
-  
-  // generate new food
+  // 生成新食物
   if (frameCount % 60 == 0) {
     const isGood = random() < 0.6;
     const foodArray = isGood ? goodArray : badArray;
@@ -139,12 +128,15 @@ function draw() {
     });
   }
 
-  // set character
+  // 设置角色
   let characterWidth = characterSize;
   let characterHeight = characterSize;
   let characterBottom = height - characterHeight;
 
-  image(characterImage, characterX, characterBottom, characterWidth, characterHeight);
+  // 绘制角色图像
+  for (let i = 0; i < characterImages.length; i++) {
+    image(characterImages[i], characterX, characterBottom, characterWidth, characterHeight);
+  }
 
   for (let i = 0; i < myFood.length; i++) {
     if (!myFood[i].touched) {
