@@ -51,9 +51,9 @@ server.listen(PORT, () => {
 })
 
 function initializeFood() {
-  food  = [];// clear the array before adding the new sqObjects;
+  food  = [];// clear the array before adding the new food;
   for(let i =0;i<numFood;i++) {
-    let xPos = Math.floor(Math.random()*700); //get a random value bw 0-400 (assuming width of canvas is 400)
+    let xPos = Math.floor(Math.random()*700); //get a random value bw 0-700 (canvas width is 700)
     let yPos = Math.floor(Math.random()*700);
     food.push({id:i,x:xPos, y:yPos, touched:false}); //set touched to false initially, once a mouse has touched, we will change this. 
   }
