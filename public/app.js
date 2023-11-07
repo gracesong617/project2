@@ -2,7 +2,7 @@ let socket = io();
 let myFood = [];
 let foodSize = 30;
 let foodImage;
-let characterImage;
+let characterImage = [];
 let characterX;
 let characterY;
 let characterSize = 100; //original size
@@ -10,6 +10,13 @@ let characterSizeIncrement = 5;
 let maxDropHeight = 100;
 let badDropSpeed = 5;
 let goodDropSpeed = 3;
+
+const playerCharacters = [
+  { x: 100, y: height - 100, size: 100 },
+  { x: 200, y: height - 100, size: 100 },
+  { x: 300, y: height - 100, size: 100 },
+  { x: 400, y: height - 100, size: 100 },
+];
 
 const badArray = [
   "images/bad1.png",
@@ -30,8 +37,10 @@ const goodArray = [
 ];
 
 function preload() {
-  foodImage = loadImage("images/cake.png");
-  characterImage = loadImage("images/girl.png");
+  characterImageImages[0] = loadImage("images/p1.png");
+  characterImageImages[1] = loadImage("images/p2.png");
+  characterImageImages[2] = loadImage("images/p3.png");
+  characterImageImages[3] = loadImage("images/p4.png");
   for (let i = 0; i < badArray.length; i++) {
     badArray[i] = loadImage(badArray[i]);
   }
@@ -106,7 +115,16 @@ function mouseMoved() {
 
 function draw() {
   clear();
+  
+  for (let i = 0; i < playerCharacters.length; i++) {
+    let characterWidth = playerCharacters[i].size;
+    let characterHeight = playerCharacters[i].size;
+    let characterBottom = height - characterHeight;
 
+    // 渲染每个人物
+    image(playerCharacters[i].image, playerCharacters[i].x, characterBottom, characterWidth, characterHeight);
+  }
+  
   // generate new food
   if (frameCount % 60 == 0) {
     const isGood = random() < 0.6;
