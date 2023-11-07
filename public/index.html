@@ -1,25 +1,28 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8" />
+    <title></title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/p5.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.6.0/socket.io.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DotGothic16&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
 
-<head>
-  <meta charset="utf-8">
-  <title></title>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/p5.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.6.0/socket.io.min.js"></script>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DotGothic16&display=swap" rel="stylesheet"> 
-  <link rel="stylesheet" href="style.css"></link>
-</head>
-
-<body>
-  <h1> Collect the yummy food! Avoid the non-food!</h1>
-  <button id="startButton"> Start! </button>
-  <script src="/socket.io/socket.io.js"></script>
-  <script src="app.js" charset="utf-8"></script>
-</body>
-<div id="characterName">Your Character: Waiting for assignment...</div>
-<div id="characterSize">Size: Waiting for assignment...</div>
-<div id="allPlayersCharacterSize">
-</div>
+  <body>
+    <h1>Collect the yummy food! Avoid the non-food!</h1>
+    <button id="startButton">Start!</button>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="app.js" charset="utf-8"></script>
+  </body>
+  <div id="characterName">Your Character: Waiting for assignment...</div>
+  <div id="characterSize">Size: Waiting for assignment...</div>
+  <div id="allPlayersCharacterSize">
+    <div id="gameTimeDisplay">Game Time: 00:00</div>
+  </div>
 </html>

@@ -65,7 +65,6 @@ ioServer.on("connect", (socket) => {
       character: randomCharacter,
     };
 
-    // 发送分配的角色和食物数据给特定连接
     socket.emit("setFood", data);
     console.log(`Player ${playerId} is assigned character: ${randomCharacter}`);
 
@@ -78,6 +77,22 @@ ioServer.on("connect", (socket) => {
         // updated character size to every players
         ioServer.emit("characterSizeUpdated", { playerId, size: newSize });
       }
+    });
+
+    socket.on("movePlayer", (data) => {
+      players[socket.id] = data.position; // 更新玩家位置信息
+      ioServer.emit("updatePlayerPositions", { players }); // 广播给所有客户端
+    });
+
+    socket.on("gameEnded", (data) => {
+      const playerId = socket.id;
+      const finalScore = data.score;
+  
+
+      console.log(`Player ${playerId} Final Score: ${finalScore}`);
+  
+      // show the game is end and show score(size)
+      ioServer.emit("gameEnded", { score: finalScore });
     });
   });
 

@@ -1,18 +1,35 @@
 let socket = io();
 let assignedCharacter;
-let myCharacter; // 分配给当前玩家的角色
+let myCharacter ;
+let players = {}; // 用于存储玩家位置信息
 let characterName;
-const playerSizes = {};
+const playerSizes = {}; // 使用对象来存储玩家尺寸信息
+let gameTime = 60;
+
+const characterImages = {
+  p1: "images/p1.png",
+  p2: "images/p2.png",
+  p3: "images/p3.png",
+  p4: "images/p4.png",
+};
 
 socket.on("connect", () => {
   console.log("Connected");
   socket.emit("start");
 });
 
+
+
 socket.on("characterAssigned", (character) => {
   assignedCharacter = character;
   console.log("Assigned Character: ", assignedCharacter);
+
+  const characterImageURL = characterImages[assignedCharacter];
+  console.log("Character Image URL: ", characterImageURL);
+
   myCharacter = assignedCharacter;
+  console.log("myCharacter: ", myCharacter);
+  
   displayCharacterName(assignedCharacter);
 });
 
@@ -24,9 +41,7 @@ socket.on("characterSizeUpdated", (data) => {
   const playerId = data.playerId;
   const newSize = data.size;
 
-  // 更新所有玩家的角色大小
   playerSizes[playerId] = newSize;
-  // 显示大小
   displayAllPlayersCharacterSize(playerSizes);
 });
 
@@ -35,7 +50,7 @@ socket.on("setFood", (data) => {
   console.log("Assigned Character: ", assignedCharacter);
   socket.emit("characterAssigned", assignedCharacter);
   displayCharacterName(assignedCharacter);
-  displayCharacterSize(characterSize);
+  changeCharacterSize(characterSize); // 调用 changeCharacterSize 函数并传递 characterSize
 });
 
 function displayCharacterName(character) {
@@ -60,26 +75,39 @@ function displayAllPlayersCharacterSize(playerSizes) {
   }
 }
 
-// 剩余部分的代码
+function startGameTimer() {
+  gameTimer = setInterval(() => { // 使用 setInterval 代替 setTimeout
+    gameTime -= 1;
+    if (gameTime <= 0) {
+      endGame();
+    }
+  }, 1000); // 1s 递减
+}
 
+function endGame() {
+  clearInterval(gameTimer);
+  const finalScore = playerSizes[socket.id] || 0;
+  socket.emit("gameEnded", { score: finalScore });
+}
+
+socket.on("gameEnded", (data) => {
+  const finalScore = data.score;
+  console.log("Game Ended. Final Score: " + finalScore);
+});
 
 let myFood = [];
 let foodSize = 30;
 let foodImage;
 let characterX;
 let characterY;
-let characterSize = 80; // Original size
+let characterSize = 80;
 let characterSizeIncrement = 5;
 let maxDropHeight = 100;
 let badDropSpeed = 5;
 let goodDropSpeed = 3;
 
-const characterImages = [
-  "images/p1.png",
-  "images/p2.png",
-  "images/p3.png",
-  "images/p4.png",
-];
+
+
 
 const badArray = [
   "images/bad1.png",
@@ -118,6 +146,52 @@ window.addEventListener("load", () => {
   });
 });
 
+document.addEventListener("mousemove", function(event) {
+  const mouseX = event.clientX;
+  const mouseY = event.clientY;
+  console.log(`Mouse X: ${mouseX}, Mouse Y: ${mouseY}`);
+});
+
+function mouseMoved() {
+  console.log(`Character X: ${characterX}, Character Y: ${characterY}`);
+  if (myCharacter && players[myCharacter]) {
+    const player = players[myCharacter];
+    const size = playerSizes[socket.id] || characterSize;
+
+    characterX = mouseX - size / 2;
+    characterY = constrain(mouseY, height - 100, height - 100);
+
+    // Check for collisions and remove food
+    for (let i = myFood.length - 1; i >= 0; i--) {
+      if (
+        characterX < myFood[i].x + foodSize &&
+        characterX + size > myFood[i].x &&
+        characterY < myFood[i].y + foodSize &&
+        characterY + size > myFood[i].y
+      ) {
+        if (myFood[i].isGood) {
+          size += characterSizeIncrement; // Good food - increase by 10 pixels
+        } else {
+          // Randomly decrease by 10 to 30 pixels
+          size -= Math.floor(random(10, 31));
+          size = max(size, 100);
+        }
+        myFood.splice(i, 1); // Remove food
+      }
+    }
+
+    // Send updated food to the server
+    let data = {
+      food: myFood,
+      size: size,
+      x: characterX,
+      y: characterY,
+    };
+    socket.emit("foodFromClient", data);
+  }
+}
+
+
 
 
 function setup() {
@@ -142,40 +216,11 @@ function setup() {
   }
 }
 
-function mouseMoved() {
-  
-  characterX = mouseX - characterSize / 2;
-  characterY = constrain(mouseY, height - 100, height - 100);
 
-  // Check for collisions and remove food
-  for (let i = myFood.length - 1; i >= 0; i--) {
-    if (
-      characterX < myFood[i].x + foodSize &&
-      characterX + characterSize > myFood[i].x &&
-      characterY < myFood[i].y + foodSize &&
-      characterY + characterSize > myFood[i].y
-    ) {
-      if (myFood[i].isGood) {
-        characterSize += characterSizeIncrement; // Good food - increase by 10 pixels
-      } else {
-        // Randomly decrease by 10 to 30 pixels
-        characterSize -= Math.floor(random(10, 31));
-        characterSize = max(characterSize, 100);
-      }
-      myFood.splice(i, 1); // Remove food
-    }
-  }
-
-  // Send updated food to the server
-  let data = {
-    food: myFood,
-  };
-  socket.emit("foodFromClient", data);
-}
 
 function draw() {
   clear();
-
+  console.log("myCharacter:", myCharacter);
   // Generate new food
   if (frameCount % 60 == 0) {
     const isGood = random() < 0.6;
@@ -223,4 +268,10 @@ function draw() {
       image(img, myFood[i].x, myFood[i].y, foodSize, foodSize);
     }
   }
+
+  fill(255);
+  textSize(16);
+  text(`Controlled Character: ${myCharacter}`, 10, 30);
 }
+
+
