@@ -6,12 +6,19 @@ let characterName;
 const playerSizes = {}; // 使用对象来存储玩家尺寸信息
 let gameTime = 60;
 
-const characterImages = {
-  p1: "images/p1.png",
-  p2: "images/p2.png",
-  p3: "images/p3.png",
-  p4: "images/p4.png",
-};
+const characterImages = [
+  "images/p1.png",
+  "images/p2.png",
+  "images/p3.png",
+  "images/p4.png",
+];
+
+// const characterImages = {
+//   p1: "images/p1.png",
+//   p2: "images/p2.png",
+//   p3: "images/p3.png",
+//   p4: "images/p4.png",
+// };
 
 socket.on("connect", () => {
   console.log("Connected");
@@ -70,7 +77,7 @@ function displayAllPlayersCharacterSize(playerSizes) {
   for (const playerId in playerSizes) {
     const size = playerSizes[playerId];
     const playerSizeDiv = document.createElement("div");
-    playerSizeDiv.innerText = `Player ${playerId}: Size: ${size}`;
+    playerSizeDiv.innerText = `Player ${assignedCharacter}: Size: ${size}`;
     playerSizeElement.appendChild(playerSizeDiv);
   }
 }
