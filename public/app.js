@@ -1,9 +1,9 @@
 let socket = io();
 let assignedCharacter;
 let myCharacter ;
-let players = {}; // 用于存储玩家位置信息
+let players = {}; 
 let characterName;
-const playerSizes = {}; // 使用对象来存储玩家尺寸信息
+const playerSizes = {}; 
 let gameTime = 60;
 
 const characterImages = [
@@ -57,6 +57,7 @@ socket.on("setFood", (data) => {
   console.log("Assigned Character: ", assignedCharacter);
   socket.emit("characterAssigned", assignedCharacter);
   displayCharacterName(assignedCharacter);
+  myCharacter = assignedCharacter;
   changeCharacterSize(characterSize); // 调用 changeCharacterSize 函数并传递 characterSize
 });
 
@@ -276,9 +277,8 @@ function draw() {
     }
   }
 
-  fill(255);
+  fill(0);
   textSize(16);
+  textFont('DotGothic16');
   text(`Controlled Character: ${myCharacter}`, 10, 30);
 }
-
-
